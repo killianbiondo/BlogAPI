@@ -23,6 +23,10 @@ class Article
     #[ORM\Column(type: "datetime_immutable")]
     private \DateTimeImmutable $createdAt;
 
+    #[ORM\ManyToOne(inversedBy: 'articles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $autor = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -58,5 +62,17 @@ class Article
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getAutor(): ?User
+    {
+        return $this->autor;
+    }
+
+    public function setAutor(?User $autor): static
+    {
+        $this->autor = $autor;
+
+        return $this;
     }
 }
