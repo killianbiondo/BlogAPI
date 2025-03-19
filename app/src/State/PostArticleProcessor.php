@@ -40,6 +40,7 @@ readonly class PostArticleProcessor implements ProcessorInterface
 
         // Vérifier si l'utilisateur est authentifié
         if (!$user instanceof User) {
+            dd("ok");
             return new JsonResponse([
                 'status' => 401,
                 'success' => false,
@@ -50,6 +51,7 @@ readonly class PostArticleProcessor implements ProcessorInterface
         $blog = new Article();
         $blog->setTitle($data->title);
         $blog->setContent($data->content);
+        $blog->setAutor($user);
 
 
         $this->entityManager->persist($blog);

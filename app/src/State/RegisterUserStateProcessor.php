@@ -24,6 +24,7 @@ class RegisterUserStateProcessor implements ProcessorInterface
 
         $user = new User();
         $user->setEmail($data->email);
+        $user->setRoles(['ROLE_USER']);
         $hashedPassword = $this->passwordHasher->hashPassword($user, $data->password);
         $user->setPassword($hashedPassword);
 
