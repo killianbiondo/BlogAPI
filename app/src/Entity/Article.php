@@ -3,10 +3,33 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\State\PostArticleProcessor;
+use App\State\PutArticleProcessor;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            processor: PostArticleProcessor::class
+        ),
+        new Get(normalizationContext : ['groups' => ['blog:read','user:read']]),
+        new GetCollection(normalizationContext : ['groups' => ['blog:read','user:read']]),
+        new Put(
+            security: "is_granted('ROLE_USER') and object.getAuthor() == user",
+            processor: PutArticleProcessor::class
+        ),
+        new Delete(security: "is_granted('ROLE_USER') and object.getAuthor() == user"),
+    ]
+)]
+
+
 class Article
 {
     #[ORM\Id]
