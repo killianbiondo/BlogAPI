@@ -1,17 +1,30 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
-import CreateArticle from "./components/CreateArticle";
+import Register from "./components/Register";
+import ArticlesList from "./components/ArticlesList";
+import ArticleDetail from "./components/ArticleDetail";
+import AddArticle from "./components/AddArticle";
+import EditArticle from "./components/EditArticle";
+import Navbar from "./components/Navbar"; // Supposons que vous avez un composant Navbar
 
 function App() {
     return (
         <Router>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/create-article" element={<CreateArticle />} />
-            </Routes>
+            <div className="App">
+                <Navbar />
+                <div className="container mx-auto py-8">
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/articles" />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/articles" element={<ArticlesList />} />
+                        <Route path="/articles/:id" element={<ArticleDetail />} />
+                        <Route path="/articles/new" element={<AddArticle />} />
+                        <Route path="/articles/edit/:id" element={<EditArticle />} />
+                    </Routes>
+                </div>
+            </div>
         </Router>
     );
 }
