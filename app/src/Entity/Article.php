@@ -8,22 +8,28 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Dto\ArticleDto;
 use App\State\PostArticleProcessor;
 use App\State\PutArticleProcessor;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity]
 #[ApiResource(
     operations: [
         new Post(
             security: "is_granted('ROLE_USER')",
+            input: ArticleDto::class,
             processor: PostArticleProcessor::class
         ),
         new Get(normalizationContext : ['groups' => ['blog:read','user:read']]),
         new GetCollection(normalizationContext : ['groups' => ['blog:read','user:read']]),
         new Put(
             security: "is_granted('ROLE_USER') and object.getAuthor() == user",
+            input: ArticleDto::class,
             processor: PutArticleProcessor::class
+
         ),
         new Delete(security: "is_granted('ROLE_USER') and object.getAuthor() == user"),
     ]
@@ -87,12 +93,12 @@ class Article
         return $this->createdAt;
     }
 
-    public function getAutor(): ?User
+    public function getAuthor(): ?User
     {
         return $this->autor;
     }
 
-    public function setAutor(?User $autor): static
+    public function setAuthor(?User $autor): static
     {
         $this->autor = $autor;
 
