@@ -1,43 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { api } from "../services/api";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../services/api';
+import ArticleCard from './ArticleCard';
 
-const ArticleDetail = () => {
-    const [article, setArticle] = useState(null);
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const userId = localStorage.getItem("userId");
+const ArticleList = () => {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        api.get(`/articles/${id}`)
-            .then((res) => setArticle(res.data))
-            .catch((err) => console.error(err));
-    }, [id]);
+        const fetchArticles = async () => {
+            try {
+                const response = await api.get('/articles');
+                console.log("Réponse API :", response);
+                if (response && response.member) {
+                    setArticles(response.member);
+                } else {
+                    setArticles([]);
+                }
+                setLoading(false);
+            } catch (err) {
+                console.error("Erreur API :", err);
+                setError("Impossible de charger les articles.");
+                setLoading(false);
+            }
+        };
 
-    const deleteArticle = async () => {
-        try {
-            await api.delete(`/articles/${id}`);
-            navigate("/articles");
-        } catch (error) {
-            console.error("Erreur lors de la suppression", error);
-        }
-    };
+        fetchArticles();
+    }, []);
 
-    if (!article) return <div>Chargement...</div>;
+    if (loading) return <div>Chargement des articles...</div>;
+    if (error) return <div style={{ color: "red" }}>{error}</div>;
 
     return (
         <div>
-            <h1>{article.title}</h1>
-            <p>{article.content}</p>
-            <p>Auteur: {article.author.email}</p>
-            {userId === article.author.id.toString() && (
-                <>
-                    <button onClick={() => navigate(`/edit/${id}`)}>Modifier</button>
-                    <button onClick={deleteArticle}>Supprimer</button>
-                </>
+            <h1>Liste des articles</h1>
+            {articles.length === 0 ? (
+                <p>Aucun article disponible.</p>
+            ) : (
+                <div className="article-grid">
+                    {articles.map((article) => (
+                        <ArticleCard key={article.id} article={article} />
+                    ))}
+                </div>
             )}
         </div>
     );
 };
 
-export default ArticleDetail;
+export default ArticleList;

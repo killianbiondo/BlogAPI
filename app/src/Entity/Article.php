@@ -12,6 +12,7 @@ use App\Dto\ArticleDto;
 use App\State\PostArticleProcessor;
 use App\State\PutArticleProcessor;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -23,8 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             input: ArticleDto::class,
             processor: PostArticleProcessor::class
         ),
-        new Get(normalizationContext : ['groups' => ['blog:read','user:read']]),
-        new GetCollection(normalizationContext : ['groups' => ['blog:read','user:read']]),
+        new Get(normalizationContext: ['groups' => ['blog:read','user:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['blog:read','user:read']]),
         new Put(
             security: "is_granted('ROLE_USER') and object.getAuthor() == user",
             input: ArticleDto::class,
@@ -32,7 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
         ),
         new Delete(security: "is_granted('ROLE_USER') and object.getAuthor() == user"),
-    ]
+    ],
+normalizationContext: ['groups' => ['blog:read']]
 )]
 
 
@@ -41,19 +43,24 @@ class Article
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['blog:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['blog:read'])]
     private string $title;
 
     #[ORM\Column(type: "text")]
+    #[Groups(['blog:read'])]
     private string $content;
 
     #[ORM\Column(type: "datetime_immutable")]
+    #[Groups(['blog:read'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['blog:read'])]
     private ?User $autor = null;
 
     public function __construct()

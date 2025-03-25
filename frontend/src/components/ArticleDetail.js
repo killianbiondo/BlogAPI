@@ -1,41 +1,82 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../services/api";
 
 const ArticleDetail = () => {
-    const [article, setArticle] = useState(null);
     const { id } = useParams();
+    const [article, setArticle] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-    const userId = localStorage.getItem("userId");
 
     useEffect(() => {
-        api.get(`/articles/${id}`)
-            .then((res) => setArticle(res.data))
-            .catch((err) => console.error(err));
+        const fetchArticle = async () => {
+            try {
+                const data = await api.get(`/articles/${id}`);
+                setArticle(data);
+                setLoading(false);
+            } catch (error) {
+                setError('Erreur lors du chargement de l\'article');
+                setLoading(false);
+            }
+        };
+
+        fetchArticle();
     }, [id]);
 
-    const deleteArticle = async () => {
-        try {
-            await api.delete(`/articles/${id}`);
-            navigate("/articles");
-        } catch (error) {
-            console.error("Erreur lors de la suppression", error);
+    const handleDelete = async () => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+            try {
+                await api.delete(`/articles/${id}`);
+                navigate('/');
+            } catch (error) {
+                setError('Erreur lors de la suppression de l\'article');
+            }
         }
     };
 
-    if (!article) return <div>Chargement...</div>;
+    if (loading) {
+        return <div className="loading">Chargement...</div>;
+    }
+
+    if (error) {
+        return <div className="error">{error}</div>;
+    }
+
+    if (!article) {
+        return <div className="not-found">Article non trouvé</div>;
+    }
+
+    const isAuthor = localStorage.getItem('userId') === article.author.id.toString();
 
     return (
-        <div>
-            <h1>{article.title}</h1>
-            <p>{article.content}</p>
-            <p>Auteur: {article.author.email}</p>
-            {userId === article.author.id.toString() && (
-                <>
-                    <button onClick={() => navigate(`/edit/${id}`)}>Modifier</button>
-                    <button onClick={deleteArticle}>Supprimer</button>
-                </>
-            )}
+        <div className="article-detail-container">
+            <Link to="/" className="back-link">
+                &larr; Retour à la liste
+            </Link>
+
+            <article className="article-detail">
+                <h1 className="article-title">{article.title}</h1>
+
+                <div className="article-meta">
+                    Par {article.author.email}
+                </div>
+
+                <div className="article-content">
+                    {article.content}
+                </div>
+
+                {isAuthor && (
+                    <div className="article-actions">
+                        <Link to={`/edit/${article.id}`} className="btn btn-edit">
+                            Modifier
+                        </Link>
+                        <button onClick={handleDelete} className="btn btn-delete">
+                            Supprimer
+                        </button>
+                    </div>
+                )}
+            </article>
         </div>
     );
 };

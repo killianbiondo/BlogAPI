@@ -11,7 +11,7 @@ const CreateArticle = () => {
         e.preventDefault();
         try {
             await api.post("/articles", { title, content });
-            navigate("/articles");
+            navigate("/");
         } catch (error) {
             console.error("Erreur lors de la création de l'article", error);
         }
