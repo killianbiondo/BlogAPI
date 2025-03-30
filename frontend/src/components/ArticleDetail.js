@@ -47,7 +47,7 @@ const ArticleDetail = () => {
         return <div className="not-found">Article non trouvé</div>;
     }
 
-    const isAuthor = localStorage.getItem('userId') === article.author.id.toString();
+    const isLoggedIn = !!localStorage.getItem('token');
 
     return (
         <div className="article-detail-container">
@@ -59,14 +59,14 @@ const ArticleDetail = () => {
                 <h1 className="article-title">{article.title}</h1>
 
                 <div className="article-meta">
-                    Par {article.author.email}
+                    Par {article.author && article.author.email ? article.author.email : 'Auteur inconnu'}
                 </div>
 
                 <div className="article-content">
                     {article.content}
                 </div>
 
-                {isAuthor && (
+                {isLoggedIn && (
                     <div className="article-actions">
                         <Link to={`/edit/${article.id}`} className="btn btn-edit">
                             Modifier

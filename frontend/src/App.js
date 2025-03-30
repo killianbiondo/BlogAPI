@@ -7,6 +7,8 @@ import ArticleDetail from "./components/ArticleDetail";
 import CreateArticle from "./components/CreateArticle";
 import EditArticle from "./components/EditArticle";
 import Navbar from "./components/Navbar";
+import './styles/Main.css';
+
 
 function App() {
   return (

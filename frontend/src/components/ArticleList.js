@@ -33,7 +33,7 @@ const ArticleList = () => {
     if (error) return <div style={{ color: "red" }}>{error}</div>;
 
     return (
-        <div>
+        <div className="home-container">
             <h1>Liste des articles</h1>
             {articles.length === 0 ? (
                 <p>Aucun article disponible.</p>
