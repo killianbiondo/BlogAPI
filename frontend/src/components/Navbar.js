@@ -1,29 +1,35 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
-    const isLoggedIn = !!localStorage.getItem("token");
+    const navigate = useNavigate();
+    const isLoggedIn = !!localStorage.getItem('token');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
 
     return (
-        <nav>
-            <ul>
-                <li><Link to="/">Accueil</Link></li>
-                {isLoggedIn ? (
-                    <>
-                        <li><Link to="/create">Créer un article</Link></li>
-                        <li><button onClick={() => {
-                            localStorage.removeItem("token");
-                            localStorage.removeItem("userId");
-                            window.location.reload();
-                        }}>Déconnexion</button></li>
-                    </>
-                ) : (
-                    <>
-                        <li><Link to="/login">Connexion</Link></li>
-                        <li><Link to="/register">Inscription</Link></li>
-                    </>
-                )}
-            </ul>
+        <nav className="navbar">
+            <div className="navbar-container">
+                <Link to="/" className="navbar-logo">BlogAPI</Link>
+                <div className="navbar-links">
+                    <Link to="/" className="navbar-link">Accueil</Link>
+                    {isLoggedIn && <Link to="/create" className="navbar-link">Créer un article</Link>}
+                </div>
+                <div className="navbar-auth">
+                    {isLoggedIn ? (
+                        <button onClick={handleLogout} className="navbar-button">Déconnexion</button>
+                    ) : (
+                        <>
+                            <Link to="/login" className="navbar-button">Connexion</Link>
+                            <Link to="/register" className="navbar-button">Inscription</Link>
+                        </>
+                    )}
+                </div>
+            </div>
         </nav>
     );
 };

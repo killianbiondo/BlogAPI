@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../services/api";
+import "../styles/ArticleDetail.css";
 
 const ArticleDetail = () => {
     const { id } = useParams();
